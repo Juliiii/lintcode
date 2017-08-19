@@ -1,3 +1,7 @@
+#include <iostream>
+#include <map>
+using namespace std;
+
 class Solution {
 public:
     /**
@@ -7,22 +11,33 @@ public:
     bool isUgly(int num) {
         // Write your code here
         if (num == 1) return true;
-        int left;
         do {
-          left = mod[num];
-          if (!left) return true;
-          num = left;
-		} while (left != -1);
-		return false;
+          if (canMod(num)) {
+          	cout<<num<<endl;
+          	num = mod(num);
+		  } else return false;
+		} while (num != 1);
+		return true;
     }
     
     int mod (int num) {
-    	int mods = [2, 3, 5];
-    	for (int i = 0; i < 3; i++) {
-    		if (!num % mods[i]) {
-    			return num / mods[i];
-			}
-		}
-		return -1;
+    	if (num % 2 == 0) return num / 2;
+    	if (num % 3 == 0) return num / 3;
+    	if (num % 5 == 0) return num / 5;
+		return num; 
+	}
+    
+    
+    bool canMod (int num) {
+    	if (num % 2 == 0 || num % 3 == 0 || num % 5 == 0) return true;
+		return false;
 	}
 };
+
+int main () {
+	Solution s;
+	cout<<s.isUgly(8);
+	return 0;
+	
+}
+
