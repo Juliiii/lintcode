@@ -10,56 +10,84 @@ struct ListNode {
 		next = NULL;
 	}
 };
-
 class Solution {
 public:
     /**
-     * @param head: The head of linked list.
-     * @param m: The start position need to reverse.
-     * @param n: The end position need to reverse.
-     * @return: The new head of partial reversed linked list.
+     * @param head a ListNode
+     * @oaram v1 an integer
+     * @param v2 an integer
+     * @return a new head of singly-linked list
      */
-    ListNode *reverseBetween(ListNode *head, int m, int n) {
-        // write your code here
-        if (!head) return NULL;
-        
-        int count = 0;
-        
-        ListNode* temp = head, *leftNext, *left, *right, *pre = head, *preRight;
-        
-        while (temp) {
-        	count++;
-        	if (count == m) {
-        		left = pre;
-        		leftNext = temp;
-			} else if (count == n) {
-				preRight = temp;
-				right = temp->next;
+    ListNode* swapNodes(ListNode* head, int v1, int v2) {
+        // Write your code here
+        if (!head || v1 == v2) return head;
+        bool find1 = false, find2 = false;
+        ListNode* no1 = NULL, *no2 = NULL, *pre1 = NULL, *pre2 = NULL, *pre = NULL;
+        ListNode* cur = head;
+        while (cur) {
+        	if (!no1 && cur->val == v1) {
+        		no1 = cur;
+        		pre1 = pre;
 			}
-			pre = temp;
-        	temp = temp->next;
+        	if (!no2 && cur->val == v2) {
+        		no2 = cur;
+        		pre2 = pre;
+			}
+        	if (no1 && no2) break;
+        	pre = cur; 
+        	cur = cur->next;
 		}
-		preRight->next = NULL;
 		
+		if (no1 && no2) {
+			if (pre1 && pre2) {
+				if (pre1 == no2) {
+					pre = no1->next;
+					no2->next = pre;
+					no1->next = no2;
+					pre2->next = no1;
+				} else if (pre2 == no1) {
+					pre = no2->next;
+					no1->next = pre;
+					no2->next = no1;
+					pre1->next = no2;
+				} else {
+					pre = no2->next;
+					pre1->next = no2;
+					no2->next = no1->next;
+					pre2->next = no1;
+					no1->next = pre;
+				}
+			} else {
+				if (!pre1) {
+					if (pre2 == no1) {
+						no1->next = no2->next;
+						no2->next = no1;
+						head = no2;
+					} else {
+						pre = no1->next;
+						no1->next = no2->next;
+						pre2->next = no1;
+						no2->next =  pre;
+						head = no2;
+					}
+				} else {
+					if (pre1 == no2) {
+						no2->next = no1->next;
+						no1->next = no2;
+						head = no1;
+					} else {
+						pre = no2->next;
+						no2->next = no1->next;
+						pre1->next = no2;
+						no1->next =  pre;
+						head = no1;
+					}					
+				}
+			}
+		}
+		return head;
 		
-		temp = reverse(left->next);
-		left->next = temp; 
-		leftNext->next = right;
-			
-		return m != 1 ? head : preRight;
     }
-    
-    ListNode* reverse(ListNode* head) {
-    	ListNode* temp, *cur, *next, *pre = NULL;
-    	temp = head;
-    	while (temp) {
-    		next = temp->next;
-    		temp->next = pre;
-    		pre = temp;
-    		temp = next;
-		}
-		return pre;
-	}
 };
 
 int main () {
@@ -73,12 +101,10 @@ int main () {
 	cur2->next = cur3;
 	
 	Solution s;
-	cur = s.reverseBetween(cur, 2, 3);
-	
+	cur = s.swapNodes(cur, 3, 4);
 	while (cur) {
 		cout<<cur->val<<endl;
-		cur = cur->next; 
+		cur = cur->next;
 	}
-	
 	return 0;
 }
